@@ -1,0 +1,56 @@
+---
+title: "Wiltermuth 2011: Replication"
+author: "Em reit"
+date: "February 26, 2017"
+output: html_document
+---
+
+```{r}
+library(car)
+library(psych)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+```
+
+
+```{r}
+setwd("~/Documents/StanfordCoursework/winter2017/MF's/Project")
+
+qualtrics1 <- read.csv("wiltermuth2011_pilotA.csv", stringsAsFactors = FALSE)
+
+qualtrics2 <- qualtrics1 %>%
+  slice(3:7)
+
+#placeholder for if I use an attention check
+#table(qualtrics2$attentioncheck)
+#d <- qualtrics2 %>%
+  #filter(attentioncheck == 1)
+```
+
+
+```{r cheating count}
+d <- qualtrics2
+
+d$condition_1or2 <- NA
+d$condition_1or2[which(d$Condition == 1)] <- "self_alone"
+d$condition_1or2[which(d$Condition == 2)] <- "self_other"
+
+
+d$X3 <- as.numeric(d$X3)
+d$cheat_alone <- d$X3
+d$cheat_other <- d$X3b
+
+d$cheat <- NA
+d$cheat[which(d$cheat_alone == 1 | d$cheat_other == 1 )] <- "yes"
+d$cheat[which(d$cheat_alone == 2 | d$cheat_other == 2 )] <- "no"
+```
+
+
+```{r}
+cheatfrequency <- d %>% group_by(condition_1or2, cheat) %>% dplyr::summarise(freq=n())
+print(cheatfrequency)
+
+#prop <- as.table(matrix(c(alone_yes, alone_no, other_yes, other_no), byrow=T,ncol=2))
+#print(prop)
+#chisq.test(prop)
