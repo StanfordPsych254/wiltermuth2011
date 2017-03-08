@@ -15,42 +15,44 @@ library(dplyr)
 
 
 ```{r}
-setwd("~/Documents/StanfordCoursework/winter2017/MF's/Project")
+#Load in raw data.
+setwd("~/Documents/StanfordCoursework/winter2017/MF's/Project/wiltermuth2011/Pilot A")
 
-qualtrics1 <- read.csv("wiltermuth2011_pilotA.csv", stringsAsFactors = FALSE)
-
-qualtrics2 <- qualtrics1 %>%
-  slice(3:7)
-
-#placeholder for if I use an attention check
-#table(qualtrics2$attentioncheck)
-#d <- qualtrics2 %>%
-  #filter(attentioncheck == 1)
+#Remove the first two header lines from Qualtrics raw file.
+all_content = readLines("wiltermuth2011_pilotA.csv")
+skip_second = all_content[-1]
+skip_third = skip_second[-1]
+qualtrics = read.csv(textConnection(skip_third), header = TRUE, stringsAsFactors = FALSE)
 ```
 
 
 ```{r cheating count}
-d <- qualtrics2
+d <- qualtrics
 
-d$condition_1or2 <- NA
-d$condition_1or2[which(d$Condition == 1)] <- "self_alone"
-d$condition_1or2[which(d$Condition == 2)] <- "self_other"
+#Embedded data is set to Condition = self-alone or self-other. These are the two conditions used for analyses.
 
 
-d$X3 <- as.numeric(d$X3)
-d$cheat_alone <- d$X3
-d$cheat_other <- d$X3b
+#cheat_alone and cheat_other are the binary "yes/no" variables about having solved the unsovlable 3rd word.
+d$cheat_alone <- as.numeric(d$cheat_alone)
+d$cheat_other <- as.numeric(d$cheat_other)
 
+#this combines the cheating measure across conditions for analyses.
 d$cheat <- NA
 d$cheat[which(d$cheat_alone == 1 | d$cheat_other == 1 )] <- "yes"
 d$cheat[which(d$cheat_alone == 2 | d$cheat_other == 2 )] <- "no"
 ```
 
 
-```{r}
-cheatfrequency <- d %>% group_by(condition_1or2, cheat) %>% dplyr::summarise(freq=n())
+```{r frequency of cheating per condition}
+cheatfrequency <- d %>% group_by(Condition, cheat) %>% dplyr::summarise(freq=n())
 print(cheatfrequency)
+```
 
+
+```{r chi-square test of interest}
 #prop <- as.table(matrix(c(alone_yes, alone_no, other_yes, other_no), byrow=T,ncol=2))
 #print(prop)
 #chisq.test(prop)
+
+
+#rsa <- lm(cheat ~ Condition, data = d); summary(rsa)

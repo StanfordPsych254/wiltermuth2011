@@ -100,7 +100,7 @@ library(tidyverse)
 
 
 ```{r}
-setwd("~/Documents/StanfordCoursework/winter2017/MF's/Project/Pilot A")
+setwd("~/Documents/StanfordCoursework/winter2017/MF's/Project/wiltermuth2011/Pilot A")
 
 qualtrics1 <- read.csv("wiltermuth2011_pilotA.csv", stringsAsFactors = FALSE)
 
