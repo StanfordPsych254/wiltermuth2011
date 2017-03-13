@@ -38,3 +38,4 @@ mturk/
 # Specific file keep
 !README.md
 !original_paper/Cheating More when the Spoils are Split.pdf
+.Rproj.user
