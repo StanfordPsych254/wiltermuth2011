@@ -1,0 +1,10 @@
+<p><b>Word Jumbles</b></p><p>Please unscramble each of the word jumbles below.&nbsp; Remember you will be only be paid for those you solve in order from the beginning.&nbsp; After you unscramble a word jumble, please check &quot;Solved&quot; to indicate that you have solved the word jumble.&nbsp; Keep in mind that you will receive $1 for each word jumble you solve in order from the beginning.  Also, remember that another randomly selected participant from another experiment will also receive $1 for each word jumble you solve in order from the beginning</p><p>Please click &quot;continue&quot; after you have finished or nine minutes have elapsed.&nbsp; Thank you.</p>
+Anagram1	likert	1. U N H T E D	2	Not Solved	Solved
+Anagram2	likert	2. E O S H U	2	Not Solved	Solved
+Anagram3	likert	3. U N A A G T	2	Not Solved	Solved
+Anagram4	likert	4. Y T H O I R D	2	Not Solved	Solved
+Anagram5	likert	5. O L A R C	2	Not Solved	Solved
+Anagram6	likert	6. J N I P M U G	2	Not Solved	Solved
+Anagram7	likert	7. H G I T W E	2	Not Solved	Solved
+Anagram8	likert	8. C L A L S O U	2	Not Solved	Solved
+Anagram9	likert	9. Y O M S E E V L D	2	Not Solved	Solved

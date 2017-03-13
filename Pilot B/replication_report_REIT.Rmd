@@ -20,11 +20,11 @@ For my replication project, I chose Wiltermuth's 2011 paper, *Cheating More When
 
 ###Power Analysis
 
-The original effect size of the main test (chi-square between those who cheat v. not in the self alone as compared to the self-and-other) was .16. A power analysis revealed that we would need a sample of 307 particiapnts to detect such an effect with 80% power. Given bugdet constraints... 
+The original effect size of the main test (chi-square between those who cheat v. not in the self alone as compared to the self-and-other) was .14. A power analysis revealed that we would need a sample of 401 particiapnts to detect such an effect with 80% power. Given bugdet constraints of having $100 to run the study, and factoring each participant would get paid 40 cents base pay + some variable pay, we intend to collect 80 participant data and, based on how much funds we have left over, will run more subjects until we run out of $100 (it is hard to know a priori the exact number because people will get paid based on how many words they report unscrambling.)
 
 ###Planned Sample
 
-Our planned sample size is X. We will stop data collection after we attain this number of participants. Data collection will occur on Amazon Mechanical Turk, limited to US residents only. 
+Our planned sample size is as much as we can collect with the $100 budget. We will stop data collection after we run out of funds. Data collection will occur on Amazon Mechanical Turk, limited to US residents only. 
 
 ###Materials
 
@@ -104,48 +104,72 @@ library(dplyr)
 
 ```{r}
 #Load in raw data.
-setwd("~/Documents/StanfordCoursework/winter2017/MF's/Project/wiltermuth2011/Pilot A")
+setwd("~/Documents/StanfordCoursework/winter2017/MF's/Project/wiltermuth2011/Pilot B")
 
 #Remove the first two header lines from Qualtrics raw file.
 
-all_content = readLines("wiltermuth2011_pilotA.csv")
-skip_second = all_content[-1]
-skip_third = skip_second[-1]
-qualtrics = read.csv(textConnection(skip_third), header = TRUE, stringsAsFactors = FALSE)
+qualtrics <- read.csv(("wiltermuth2011_pilotB.csv"), header = TRUE, stringsAsFactors = FALSE) %>%
+  slice(-(1:2))
 ```
 
 
 ```{r cheating count}
 d <- qualtrics
 
-#Embedded data is set to Condition = self-alone or self-other. These are the two conditions used for analyses.
+#Embedded data is set to Condition = self or other. These are the two conditions used for analyses.
+table(d$Condition)
 
-
-#cheat_alone and cheat_other are the binary "yes/no" variables about having solved the unsovlable 3rd word.
-d$cheat_alone <- as.numeric(d$cheat_alone)
-d$cheat_other <- as.numeric(d$cheat_other)
+#self_cheat and other_cheat are the binary "yes/no" variables about having solved the unsovlable 3rd word.
+d$self_cheat <- as.factor(d$self_cheat)
+d$other_cheat <- as.factor(d$other_cheat)
 
 #this combines the cheating measure across conditions for analyses.
-d <- mutate(cheat_yes = cheat_alone == 1 | cheat_other == 1) %>%
-  mutate(cheat_no = cheat_alone == 2 | cheat_other == 2) %>%
-  mutate(cheat = sum(cheat_alone, cheat_other, na.rm = T))
+d1 <- d %>%
+  mutate(cheat_yes = self_cheat == 2 | other_cheat == 2)
+table(d1$cheat_yes) 
 ```
 
 
 ```{r frequency of cheating per condition}
-cheatfrequency <- d %>% group_by(Condition, cheat) %>% dplyr::summarise(freq=n())
+#this breaks down cheating (false/true) by condition (self/other)
+cheatfrequency <- d1 %>% group_by(Condition, cheat_yes) %>% dplyr::summarise(freq=n())
 print(cheatfrequency)
+
+cheatyes_self_freq <- 1
+cheatno_self_freq <- 1
+cheatyes_other_freq <- 2
+cheatno_other_freq <- 0
 ```
 
 
 ```{r chi-square test of interest}
-#prop <- as.table(matrix(c(alone_yes, alone_no, other_yes, other_no), byrow=T,ncol=2))
-#print(prop)
-#chisq.test(prop)
+#this tests the above frequencies to see if the % who cheat in self-alone is different than self-other
+prop <- as.table(matrix(c(cheatyes_self_freq, cheatno_self_freq, cheatyes_other_freq, cheatno_other_freq), byrow=T,ncol=2))
+print(prop)
+chisq.test(prop)
+
+#setting up values to graph
+percent_cheat_self <- (cheatyes_self_freq/(cheatyes_self_freq+cheatno_self_freq))*100; percent_cheat_self
+percent_cheat_other <- (cheatyes_other_freq/(cheatyes_other_freq+cheatno_other_freq))*100; percent_cheat_other
 
 
-#rsa <- lm(cheat ~ Condition, data = d); summary(rsa)
-*Side-by-side graph with original graph is ideal here*
+#this is the original % of cheating in self-alone vs. self-other in Wiltermuth 2011
+originalprop <- as.table(matrix(c(15,52,22,38), byrow=T, ncol=2))
+print(originalprop)
+chisq.test(originalprop)
+percent_cheat_self_original <- (15/67)*100
+percent_cheat_other_original <- (22/60)*100
+
+
+counts <- as.table(matrix(c(percent_cheat_self, percent_cheat_other, percent_cheat_self_original, percent_cheat_other_original), byrow=T, ncol=2))
+colnames(counts) <- c("Original", "Replication")
+rownames(counts) <- c("Self & Other", "Self Alone")
+
+barplot(counts, main="Percent Cheat in Self vs. Other: Original Compared to Replication", 
+  	xlab="Original v. Replication", col=c("darkblue","red"),
+  	legend = rownames(counts), beside=TRUE)
+#Side-by-side graph with original graph is ideal here*
+```
 
 ###Exploratory analyses
 
