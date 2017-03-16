@@ -20,11 +20,11 @@ For my replication project, I chose Wiltermuth's 2011 paper, *Cheating More When
 
 ###Power Analysis
 
-The original effect size of the main test (chi-square between those who cheat v. not in the self alone as compared to the self-and-other) was .14. A power analysis revealed that we would need a sample of 401 particiapnts to detect such an effect with 80% power. Given bugdet constraints of having $100 to run the study, and factoring each participant would get paid 40 cents base pay + some variable pay, we intend to collect 80 participant data and, based on how much funds we have left over, will run more subjects until we run out of $100 (it is hard to know a priori the exact number because people will get paid based on how many words they report unscrambling.)
+The original effect size of the main test (chi-square between those who cheat v. not in the self alone as compared to the self-and-other) was .14. A power analysis revealed that we would need a sample of 401 participants to detect such an effect with 80% power. Given bugdet constraints of having $50 to run the study, and factoring each participant would get paid 40 cents base pay + some variable pay, which is on average 90 cents total per participant, we intend to collect 40 participant data.
 
 ###Planned Sample
 
-Our planned sample size is as much as we can collect with the $100 budget. We will stop data collection after we run out of funds. Data collection will occur on Amazon Mechanical Turk, limited to US residents only. 
+Our planned sample size is 40 participants. Given we are more interested in how the tasks functions on MTurk, and due to budgetary constraints of the course, we will stick with a small sample and not generalize about the validity of the finding because it will not be well powered.
 
 ###Materials
 
@@ -39,13 +39,29 @@ Please click continue after you have finished or nine minutes have elapsed.
 Thank you
 
 Anagram1	likert	1. U N H T E D	2	Not Solved	Solved
+
+
 Anagram2	likert	2. E O S H U	2	Not Solved	Solved
+
+
 Anagram3	likert	3. U N A A G T	2	Not Solved	Solved
+
+
 Anagram4	likert	4. Y T H O I R D	2	Not Solved	Solved
+
+
 Anagram5	likert	5. O L A R C	2	Not Solved	Solved
+
+
 Anagram6	likert	6. J N I P M U G	2	Not Solved	Solved
+
+
 Anagram7	likert	7. H G I T W E	2	Not Solved	Solved
+
+
 Anagram8	likert	8. C L A L S O U	2	Not Solved	Solved
+
+
 Anagram9	likert	9. Y O M S E E V L D	2	Not Solved	Solved"
 
 
@@ -56,6 +72,7 @@ Participants will see nine word jumbles, which are displayed above. Unbeknownst 
 We selected **two** of the five conditions that Wiltermuth ran for the purposes of this replication:
 
 Self-and-other benefit: You will receive $1 per word jumble solved. Additionally, a randomly-selected participant from another experiment will also receive $1 per word jumble solved.
+
 Self-alone high benefit: You will receive $2 per word jumble solved.
 
 Participants were either shown the self-and-other benefit condition, or the self-alone high benefit condition. **Due to budget constraints, in the self-and-other benefit condition, the participant and the randomly-selected participant received 5 cents, and in the self-alone condition, the participant received 10 cents.*
@@ -97,8 +114,6 @@ Data preparation following the analysis plan.
 library(car)
 library(psych)
 library(tidyverse)
-library(tidyr)
-library(dplyr)
 ```
 
 
@@ -132,7 +147,9 @@ table(d1$cheat_yes)
 
 ```{r frequency of cheating per condition}
 #this breaks down cheating (false/true) by condition (self/other)
-cheatfrequency <- d1 %>% group_by(Condition, cheat_yes) %>% dplyr::summarise(freq=n())
+cheatfrequency <- d1 %>% 
+  group_by(Condition, cheat_yes) %>% 
+  dplyr::summarise(freq=n())
 print(cheatfrequency)
 
 cheatyes_self_freq <- 1
@@ -160,16 +177,20 @@ chisq.test(originalprop)
 percent_cheat_self_original <- (15/67)*100
 percent_cheat_other_original <- (22/60)*100
 
+library(ggplot2)
 
-counts <- as.table(matrix(c(percent_cheat_self, percent_cheat_other, percent_cheat_self_original, percent_cheat_other_original), byrow=T, ncol=2))
-colnames(counts) <- c("Original", "Replication")
-rownames(counts) <- c("Self & Other", "Self Alone")
+counts <- as.data.frame(matrix(c(percent_cheat_self, percent_cheat_other, percent_cheat_self_original, percent_cheat_other_original, "replication", "replication", "original", "original", "self", "other", "self", "other"), byrow=F, ncol=3))
+counts$V1 <- as.numeric(as.character(counts$V1))
 
-barplot(counts, main="Percent Cheat in Self vs. Other: Original Compared to Replication", 
-  	xlab="Original v. Replication", col=c("darkblue","red"),
-  	legend = rownames(counts), beside=TRUE)
-#Side-by-side graph with original graph is ideal here*
+
+
+ggplot(data = counts, aes(x = V2, y = V1, group = V3, fill = V3)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Percent Cheat for Self v. Self-And-Other: Original Versus Replication", x = "Original v. Replication", y = "% Cheat")
 ```
+
+
+
 
 ###Exploratory analyses
 
