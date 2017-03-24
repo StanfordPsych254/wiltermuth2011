@@ -1,0 +1,226 @@
+---
+title: "Replication of Study 2 by Wiltermuth (2011)"
+author: "Em Reit (emreit@stanford.edu)"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+
+##Introduction
+For my replication project, I chose Wiltermuth's 2011 paper, *Cheating More When the Spoils are Split.* The reason I chose Wiltermuth's 2011 paper is because I am working on some research about cheating behavior, and we were hoping to actually use the exact cheating paradigm that he used in his Study 2. The broad point of his paper was to demonstrate that people are more likely to engage in cheating behavior when they are not the sole person benfiting from such behavior. In his Study 2, participants were given an anagram unscrambling task that included a nearly unsolvable word, thus giving them the opportunity to (falsely) report their performance. He manipulated if people thought they would be the sole recipient of some sort of bonus pay-out per word unscrambled, or if someone else would also benefit from their performance. He found that people who thought someone else would also benefit from the unscrambling of the words were more likely to cheat, as measured by the reporting of having unscrambled the third (unsolvable) word.
+
+
+
+##Methods
+
+###Power Analysis
+
+The original effect size of the main test (chi-square between those who cheat in the self alone condition as compared to the self-and-other condition) was .14. A power analysis revealed that we would need a sample of 401 participants to detect such an effect with 80% power. 
+
+Given bugdet constraints of having ~$50 to run the study, and factoring each participant would get paid 40 cents base pay + some variable pay between 0 to 90 cents per participant, we will collect 40 participant data on Amazon Mechanical Turk.
+
+###Planned Sample
+
+Our planned sample size is 40 participants. Given we are more interested in how the tasks functions on MTurk, and due to budgetary constraints of the course, we will stick with a small sample and not generalize about the validity of the finding because it will not be well powered. Instead, we will focus on how this task functions on MTurk. 
+
+
+###Materials
+
+We were provided with the following materials from the author: 
+
+"Please unscramble each of the word jumbles below. Remember you will be only be paid for those you solve in order from the beginning.&nbsp; After you unscramble a word jumble, please check Solved to indicate that you have solved the word jumble
+
+Keep in mind that you will receive $1 for each word jumble you solve in order from the beginning.  Also, remember that another randomly selected participant from another experiment will also receive $1 for each word jumble you solve in order from the beginning.
+
+Please click continue after you have finished or nine minutes have elapsed."
+
+
+A link to the working experiment can be found here: https://stanfordgsb.qualtrics.com/jfe/form/SV_81gyTTxf85b31NH
+
+
+Participants will see nine word jumbles, which are displayed in the link above Unbeknownst to the participants, the third word jumble can only be unscrambled to spell the obscure word "taguan." In Wiltermuth's pre-testing, none of the thirty participants successfully unscrambled this word jumble. Thus, it would be unlikely that participants acting honestly would report having solved this jumble.
+
+
+###Procedure	
+We selected **two** of the five conditions that Wiltermuth ran for the purposes of this replication:
+
+Self-and-other benefit: You will receive $1 per word jumble solved. Additionally, a randomly-selected participant from another experiment will also receive $1 per word jumble solved.
+
+Self-alone high benefit: You will receive $2 per word jumble solved.
+
+Participants were either shown the self-and-other benefit condition, or the self-alone high benefit condition. **Due to budget constraints, in the self-and-other benefit condition, the participant and the randomly-selected participant received 5 cents, and in the self-alone condition, the participant received 10 cents.*
+
+
+###Analysis Plan
+
+Our key analysis is a chi-square test of the number of people who cheat v. don't cheat between the two conditions. We will not exclude any participants in our main analysis. 
+
+Additional analyses will consider exclusion based on (1) if the participant states having ran into any issues, and (2) if the participant states having done a task similar to the one we asked them to do.
+
+
+###Differences from Original Study
+
+There are a few major differences between this replication and the original study. First, Wiltermuth used an undergraduate online sample, whereas we are using the MTurk population. As his sample was less familiar with online studies (and have a much lower likelihood of having encountered this exact paradigm before), they might reflect a lower cheating rate, overall.
+
+Second, our pay-off structure - though it is the same ratio - is very different. Wiltermuth paid $1 per additional word unscrambled in self-and-other condition, and $2 in self-alone condition. We are paying 5 cents in self-and-other, and 10 cents in self alone. In this way, we maintaing that the self-alone receives twice as much as the self-and-other, but it is significantly less money than in the original. This could lead to participants taking cheating less seriously, and overreporting it in general. 
+
+Lastly, we include some possible exclusion criteria for exploratory purposes, whereas Wiltermuth mention no exclusions. 
+
+
+
+#### Actual Sample
+Our sample consisted of 36 MTurk participants, due to a more conservative calculation of how much each participant would be paid, and my budgetary limit of $40. We assumed on average people would receive 50 cents bonus pay, which would total 90 cents per participant. This, plus the 20% charge on Amazon to the 40 cent base pay, would result in $40.40 for this study. 
+  
+**Mike & TAs**: I am so sorry for making this slight sample reduction after getting your approval to run the study with 40 people; it was the result of recalculating my new budget of $40 and remembering that we decided to pay people in both conditions 10 cents per word solved instead of some being paid 5 cents. It totally slipped my mind to make sure that 36 was OK instead of 40. 
+
+
+#### Differences from pre-data collection methods plan
+None, other than collecting 36 participants instead of 40. 
+
+
+##Results
+Though our sample was too under-powered (post-hoc power was 13%) to do a true replication of statistical anaylses, in our small sample of 36 participants, we failed to replicate the finding that those in the self-and-other condition cheated more than those in the self-only condition (*X2* = .09, *p* = .77).
+
+
+### Data preparation
+
+Data preparation following the analysis plan.
+	
+
+```{r}
+library(car)
+library(psych)
+library(tidyverse)
+library(plotrix)
+library(ggplot2)
+
+```
+
+
+```{r}
+#Below, we load in the raw data.
+setwd("~/Documents/StanfordCoursework/winter2017/MF's/Project/wiltermuth2011/Final")
+
+
+#Removing the header lines from Qualtrics raw file.
+qualtrics <- read.csv(("wiltermuth_final.csv"), header = TRUE, stringsAsFactors = FALSE) %>%
+  slice(-(1:2))
+```
+
+
+```{r cheating count}
+#assigning new data file name
+d <- qualtrics
+
+#embedded data is set to Condition = self or other. These are the two conditions used for analyses.
+table(d$Condition)
+
+
+#self_cheat and other_cheat are the binary "yes/no" variables about having solved the unsovlable 3rd word. A 2 means they indicated having solved it, a 1 means they indicated not having solved it.
+d$self_cheat <- as.factor(d$self_cheat)
+d$other_cheat <- as.factor(d$other_cheat)
+
+
+#This combines the cheating measure across conditions for subsequent analyses.
+d1 <- d %>%
+  mutate(cheat_yes = self_cheat == 2 | other_cheat == 2)
+table(d1$cheat_yes) 
+```
+
+
+
+```{r frequency of cheating per condition}
+#this breaks down cheating (false/true) by condition (self/other)
+cheatfrequency <- d1 %>% 
+  group_by(Condition, cheat_yes) %>% 
+  dplyr::summarise(freq=n())
+print(cheatfrequency)
+
+cheatyes_self_freq <- 9
+cheatno_self_freq <- 8
+cheatyes_other_freq <- 11
+cheatno_other_freq <- 8
+
+percent_cheat_self <- (9/(8+9)) * 100
+percent_cheat_other <- (11/(11+8)) * 100
+```
+
+
+```{r chi-square test of interest}
+#this tests the above frequencies to see if the % who cheat in self-alone is different than self-other
+prop <- as.table(matrix(c(cheatyes_self_freq, cheatno_self_freq, cheatyes_other_freq, cheatno_other_freq), byrow=T,ncol=2))
+print(prop)
+chisq.test(prop, correct=F)
+```
+We find no difference in cheating behavior between conditions (*X2* = 0, *p* = 1).
+
+
+```{r graphing new results}
+#setting up values to graph
+
+d2 <- d1 %>%
+group_by(Condition, cheat_yes) %>%
+summarise(n = n()) %>%
+mutate(prop_cheat = n/sum(n)) %>%
+  mutate(percent = prop_cheat * 100, 
+       se = 100*sqrt((prop_cheat*(1-prop_cheat))/sum(n)),
+       upper = percent + se, 
+       lower = percent - se) %>%
+  filter(cheat_yes == TRUE)
+
+
+ggplot(data = d2, aes(x = Condition, y = percent)) + 
+        geom_bar(stat="identity", position="dodge") + 
+        theme_classic() +
+        geom_errorbar( aes(ymax=upper, ymin=lower ) ,
+                          width   =1,
+                          linetype="solid",
+                          position="dodge")
+```
+
+This is a visual display of the data from the replication. As this graph shows, there is no significant difference between conditions as to whether they cheated or not.
+
+
+```{r comparing to original}
+#this is the original % of cheating in self-alone vs. self-other in Wiltermuth 2011 - note that his original paper has a discrepancy in the % who cheat in the self-alone condition (14 participants or 15 participants). after reaching out to the author, he said that the 14 participant result is likely the correct one.
+
+originalprop <- as.table(matrix(c(15,52,22,38), byrow=T, ncol=2))
+print(originalprop)
+chisq.test(originalprop)
+percent_cheat_self_original <- (15/67)*100
+percent_cheat_other_original <- (22/60)*100
+
+
+
+#creating a dataframe that combines the two studies' results
+counts <- as.data.frame(matrix(c(percent_cheat_self, percent_cheat_other, percent_cheat_self_original, percent_cheat_other_original, "replication", "replication", "original", "original", "self", "other", "self", "other"), byrow=F, ncol=3))
+counts$V1 <- as.numeric(as.character(counts$V1))
+counts$other_v_self <- counts$V3
+counts
+
+
+ggplot(data = counts, aes(x = V2, y = V1, group = other_v_self, fill = other_v_self)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Percent Cheat for Self v. Self-And-Other: Original Versus Replication", x = "Original v. Replication", y = "% Cheat")
+```
+
+This comparison graph between the original results and the replication results reveal that (1) we failed to replicate the basic finding, and (2) significantly more people cheat in this task, overall, in our study as compared to Wiltermuth's study. 
+
+
+## Discussion
+
+### Summary of Replication Attempt
+
+The primary result from our replication was that there was no difference between conditions in terms of cheating behavior. Based on this result, we failed to replicate Wiltermuth's study. However, as mentioned throughout the write-up, our sample size was far too small to reliably detect an effect. Whereas Wiltermuth employed 127 online participants, we were limited to 36. However, it is worth noting that although 127 is certainly more powerful than 36, our power analysis suggested we would need a sample of 401 to have 80% power in detecting an effect such as what Wiltermuth's pilot showed. So a significantly larger sample would be needed to be properly powered. 
+
+
+### Commentary
+
+I am hestitant to draw too many conclusions from the failure to replicate this study for a few reasons. First, the small sample size left me severely under-powered. Second, our pay-off schema was significantly different than Wiltermuth's, which might have simply lowered the stakes of cheating (i.e., the over-reporting of solving anagrams seemed less costly to the researchers given our smaller bonus pay-offs) and led to more cheating overall, regardless of condition. 
+
+Despite the failure to replicate the finding, this project was incredibly useful in thinking of the purpose of the task itself. I originally took it at face value, that those who report solving the unsolvable word are necessarily cheating. Upon further reflection, and collecting exploratory data concerning having taken a task similar to this before, and if people had any suspicions, I am less convinced of the validity of this task. Ten percent of my participants stated having taken this task in previous studies, and though I initially thought I would exclude those people, upon further reflection it became less clear about when and why I should exclude people. Does knowing the nature of the task affect the reporting of solving the word? I am not sure. The whole point is that people are aware of the cheating, and doing it anyway. So having prior experience only increases awareness. Also, some people indicated suspicion in the task, that perhaps some words were unsolvable. Would that be grounds for exclusion, because it creates a different psychology - frustration towards the researcher, perhaps? It left me wondering the blurriness of the construct - no doubt some participants were aware they were lying, but some easily could have convinced themselves they knew the answer to the 3rd word. Should those people be treated the same way as the aware-liars? A few people also solved up to the 8th word, and then stopped before the challenging 9th word; are these people cheating less than those who stated solving all 9? All of these questions make me hesitant to use this task in my research before finding possible solutions to some of my concerns. 

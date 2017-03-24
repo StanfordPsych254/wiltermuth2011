@@ -165,6 +165,7 @@ prop <- as.table(matrix(c(cheatyes_self_freq, cheatno_self_freq, cheatyes_other_
 print(prop)
 chisq.test(prop)
 
+
 #setting up values to graph
 percent_cheat_self <- (cheatyes_self_freq/(cheatyes_self_freq+cheatno_self_freq))*100; percent_cheat_self
 percent_cheat_other <- (cheatyes_other_freq/(cheatyes_other_freq+cheatno_other_freq))*100; percent_cheat_other
@@ -181,10 +182,11 @@ library(ggplot2)
 
 counts <- as.data.frame(matrix(c(percent_cheat_self, percent_cheat_other, percent_cheat_self_original, percent_cheat_other_original, "replication", "replication", "original", "original", "self", "other", "self", "other"), byrow=F, ncol=3))
 counts$V1 <- as.numeric(as.character(counts$V1))
+counts$other_v_self <- counts$V3
+counts
 
 
-
-ggplot(data = counts, aes(x = V2, y = V1, group = V3, fill = V3)) +
+ggplot(data = counts, aes(x = V2, y = V1, group = other_v_self, fill = other_v_self)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(title = "Percent Cheat for Self v. Self-And-Other: Original Versus Replication", x = "Original v. Replication", y = "% Cheat")
 ```
